@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import "./body.css";
+import "../css/body.css";
+import StopWatchUi from "./StopWatchUi";
+import StopWatchReal from "./StopWatchReal";
 
 const Body = () => {
   const [toggle, setToogle] = useState(true);
@@ -10,6 +12,13 @@ const Body = () => {
   const [isPaused, setIsPaused] = useState(false);
 
   // console.log(hours, minutes, seconds);
+
+  const setZeroAll = (tid) => {
+    setHours(0);
+    setMinutes(0);
+    setSeconds(0);
+    clearInterval(tid);
+  };
 
   const handlePause = () => {
     setIsPaused(true);
@@ -27,15 +36,14 @@ const Body = () => {
       hours < 0 ||
       minutes < 0 ||
       seconds < 0
-    )
+    ) {
       setToogle(true);
-    else setToogle(false);
+      alert("Invalid Input ❌");
+    } else setToogle(false);
   };
   const handleReset = () => {
     setToogle(true);
-    setHours(0);
-    setMinutes(0);
-    setSeconds(0);
+    setZeroAll();
   };
 
   const handleTime = (e) => {
@@ -67,10 +75,8 @@ const Body = () => {
 
     if (hr === 0 && min === 0 && sec === 0) {
       setToogle(true);
-      setHours(0);
-      setMinutes(0);
-      setSeconds(0);
-      clearInterval(tid);
+      setZeroAll(tid);
+      alert("Timmer Completed ✅");
     }
   };
 
@@ -86,57 +92,20 @@ const Body = () => {
         clearInterval(tid);
       };
     }
-  }, [toggle, seconds, minutes]);
+  }, [toggle, hours, seconds, minutes]);
   return (
     <div>
-      {toggle && (
-        <div>
-          <div className="stopwatch-timebtn">
-            <input
-              id="hours"
-              className="stopwatch-box"
-              placeholder="Hr"
-              onChange={handleTime}
-            />
-            <input
-              id="minutes"
-              className="stopwatch-box"
-              placeholder="Min"
-              onChange={handleTime}
-            />
-            <input
-              id="seconds"
-              className="stopwatch-box"
-              placeholder="Sec"
-              onChange={handleTime}
-            />
-            <button onClick={handleSet} className="stopwatch-btn">
-              Start
-            </button>
-          </div>
-        </div>
-      )}
-
+      {toggle && <StopWatchUi handleSet={handleSet} handleTime={handleTime} />}
       {!toggle && (
-        <div>
-          <div className="stopwatch-realtime">
-            <h1>{hours < 10 ? "0" + " " + hours : hours}</h1>
-            <h1>{minutes < 10 ? "0" + " " + minutes : minutes}</h1>
-            <h1>{seconds < 10 ? "0" + " " + seconds : seconds}</h1>
-            {isPaused ? (
-              <button className="stopwatch-btn" onClick={handleResume}>
-                Resume
-              </button>
-            ) : (
-              <button className="stopwatch-btn" onClick={handlePause}>
-                Pause
-              </button>
-            )}
-            <button className="stopwatch-btn" onClick={handleReset}>
-              Restart
-            </button>
-          </div>
-        </div>
+        <StopWatchReal
+          handleResume={handleResume}
+          handlePause={handlePause}
+          handleReset={handleReset}
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+          isPaused={isPaused}
+        />
       )}
     </div>
   );
